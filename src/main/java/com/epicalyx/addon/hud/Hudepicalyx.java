@@ -15,7 +15,7 @@ public class Hudepicalyx extends HudElement {
 
     @Override
     public void render(HudRenderer renderer) {
-        setSize(renderer.textWidth("epicalyx watermark", true), renderer.textHeight(true));
+        setSize(renderer.textWidth("Epicalyx Watermark", true), renderer.textHeight(true));
 
         renderer.text("Epicalyx Addon", x, y, Color.WHITE, true);
     }
