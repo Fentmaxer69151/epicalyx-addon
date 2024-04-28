@@ -1,8 +1,4 @@
-# Meteor Addon Template
+# The Epicalyx Meteor Addon 
 
-A template to allow easy usage of the Meteor Addon API.
+An addon for Meteor.
 
-### How to use:  
-- Clone this project
-- Use this template to create new modules/commands
-- Run the mod with Meteor.
