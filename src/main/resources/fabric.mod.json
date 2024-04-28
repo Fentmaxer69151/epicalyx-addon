@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "epicalyx",
+  "version": "${0.01}",
+  "name": "Epicalyx Addon",
+  "description": "An addon for the Meteor utility mod.",
+  "authors": [
+    "Fentmaxxer69151"
+  ],
+  "contact": {
+    "repo": "soon"
+  },
+  "icon": "assets/epicalyx/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "meteor": [
+      "com.epicalyx.addon.Addon"
+    ]
+  },
+  "mixins": [
+    "epicalyx.mixins.json"
+  ],
+  "custom": {
+    "meteor-client:color": "420,69,69"
+  },
+  "depends": {
+    "java": ">=17",
+    "minecraft": ">=${mc_version}",
+    "meteor-client": "*"
+  }
+}
