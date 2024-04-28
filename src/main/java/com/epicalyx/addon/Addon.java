@@ -1,6 +1,7 @@
 package com.epicalyx.addon;
 
 import com.epicalyx.addon.hud.Hudepicalyx;
+import com.epicalyx.addon.modules.EpicalyxScaffold;
 import com.epicalyx.addon.modules.Moduleepicalyx;
 import com.epicalyx.addon.modules.Combat;
 import com.mojang.logging.LogUtils;
@@ -23,6 +24,7 @@ public class Addon extends MeteorAddon {
         // Modules
         Modules.get().add(new Moduleepicalyx());
         Modules.get().add(new Combat());
+        Modules.get().add(new EpicalyxScaffold());
 
 
         // Commands
