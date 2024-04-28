@@ -6,7 +6,6 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.pathing.PathManagers;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
-import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.entity.EntityUtils;
 import meteordevelopment.meteorclient.utils.entity.SortPriority;
@@ -38,6 +37,7 @@ import net.minecraft.world.GameMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -45,6 +45,15 @@ public class Combat extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgTargeting = settings.createGroup("Targeting");
     private final SettingGroup sgTiming = settings.createGroup("Timing");
+    private final float minDelay = 0.0f;
+    private final float maxDelay = 2.0f;
+    private final Setting<Boolean> randomDelayEnabled = sgTiming.add(new BoolSetting.Builder()
+        .name("random-delay")
+        .description("Enable randomization of attack delay.")
+        .defaultValue(false)
+        .build()
+    );
+
 
     // General
 
@@ -372,6 +381,12 @@ public class Combat extends Module {
         float delay = (customDelay.get()) ? hitDelay.get() : 0.5f;
         if (tpsSync.get()) delay /= (TickRate.INSTANCE.getTickRate() / 20);
 
+        if (randomDelayEnabled.get()) {
+            Random random = new Random();
+            float randomDelay = random.nextFloat() * (maxDelay - minDelay) + minDelay;
+            delay += randomDelay;
+        }
+
         if (customDelay.get()) {
             if (hitTimer < delay) {
                 hitTimer++;
@@ -380,8 +395,16 @@ public class Combat extends Module {
         } else return mc.player.getAttackCooldownProgress(delay) >= 1;
     }
 
+
+
     private void attack(Entity target) {
-        if (rotation.get() == RotationMode.OnHit) Rotations.rotate(Rotations.getYaw(target), Rotations.getPitch(target, Target.Body));
+        if (rotation.get() == RotationMode.OnHit) {
+            double targetYaw = Rotations.getYaw(target);
+            double targetPitch = Rotations.getPitch(target, Target.Body);
+
+            // Applying random offsets to yaw and pitch
+
+        }
 
         mc.interactionManager.attackEntity(mc.player, target);
         mc.player.swingHand(Hand.MAIN_HAND);
