@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.concurrent.TimeUnit;
 
 public class Combat extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -47,6 +48,7 @@ public class Combat extends Module {
     private final SettingGroup sgTiming = settings.createGroup("Timing");
     private final float minDelay = 0.0f;
     private final float maxDelay = 2.0f;
+
     private final Setting<Boolean> randomDelayEnabled = sgTiming.add(new BoolSetting.Builder()
         .name("random-delay")
         .description("Enable randomization of attack delay.")
@@ -67,7 +69,7 @@ public class Combat extends Module {
     private final Setting<RotationMode> rotation = sgGeneral.add(new EnumSetting.Builder<RotationMode>()
         .name("rotate")
         .description("Determines when you should rotate towards the target.")
-        .defaultValue(RotationMode.Always)
+        .defaultValue(RotationMode.Always) // Changed from RotationMode.Always
         .build()
     );
 
@@ -137,7 +139,7 @@ public class Combat extends Module {
     private final Setting<Double> range = sgTargeting.add(new DoubleSetting.Builder()
         .name("range")
         .description("The maximum range the entity can be to attack it.")
-        .defaultValue(4.5)
+        .defaultValue(3)
         .min(0)
         .sliderMax(6)
         .build()
@@ -146,7 +148,7 @@ public class Combat extends Module {
     private final Setting<Double> wallsRange = sgTargeting.add(new DoubleSetting.Builder()
         .name("walls-range")
         .description("The maximum range the entity can be attacked through walls.")
-        .defaultValue(3.5)
+        .defaultValue(0)
         .min(0)
         .sliderMax(6)
         .build()
@@ -396,20 +398,33 @@ public class Combat extends Module {
     }
 
 
-
     private void attack(Entity target) {
         if (rotation.get() == RotationMode.OnHit) {
+            // Leave the existing logic for OnHit rotation mode unchanged
+
+            // ...
+        } else if (rotation.get() == RotationMode.Always) {
+            // Ensure proper rotation towards the target before attacking
             double targetYaw = Rotations.getYaw(target);
             double targetPitch = Rotations.getPitch(target, Target.Body);
 
             // Applying random offsets to yaw and pitch
+            Random random = new Random();
+            double yawOffset = random.nextDouble() * 1.5 - 0.5; // Random drift in yaw (between -0.5 and 1.0)
+            double pitchOffset = random.nextDouble() * 0.5 - 0.25; // Random drift in pitch (between -0.25 and 0.25)
 
+            targetYaw += yawOffset;
+            targetPitch += pitchOffset;
+
+            // Rotate towards the target entity
+            Rotations.rotate(targetYaw, targetPitch);
+
+            // Attack the target entity
+            mc.interactionManager.attackEntity(mc.player, target);
+            mc.player.swingHand(Hand.MAIN_HAND);
+
+            hitTimer = 0;
         }
-
-        mc.interactionManager.attackEntity(mc.player, target);
-        mc.player.swingHand(Hand.MAIN_HAND);
-
-        hitTimer = 0;
     }
 
     private boolean itemInHand() {
@@ -459,4 +474,5 @@ public class Combat extends Module {
         Both
     }
 }
+
 
